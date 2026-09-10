@@ -1,414 +1,354 @@
-# SMOKEY_PUTNUM
-```react
-import React, { useState, useEffect } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stratum — Kenya's trade &amp; discovery layer</title>
+<style>
+  :root{
+    --bg:#12151C;
+    --surface:#181C24;
+    --surface-2:#1E232C;
+    --line:#2A2F3A;
+    --text:#EDEDE3;
+    --text-dim:#9AA0AC;
+    --accent:#D4A72C;
+    --accent-ink:#1B1400;
+    --manufacturer:#C97A3E;
+    --wholesaler:#3E8E7E;
+    --retailer:#D4A72C;
+    --consumer:#6C6FC4;
+    --font-display:'Avenir Next','Century Gothic','Futura',sans-serif;
+    --font-body:'Inter','Helvetica Neue',Arial,sans-serif;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display);margin:0;font-weight:700;letter-spacing:-0.01em;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:var(--font-body);cursor:pointer;}
+  img,svg{display:block;max-width:100%;}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .hidden{display:none !important;}
 
-// Reusable SVG Icon Components for a premium look without external dependencies
-const Icons = {
-  Home: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-    </svg>
-  ),
-  Layout: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-    </svg>
-  ),
-  CheckCircle: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  Clock: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  Plus: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-    </svg>
-  ),
-  Trash: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-    </svg>
-  ),
-  Menu: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-  ),
-  Bell: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-    </svg>
-  ),
-  Search: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
-  ),
-  Kanban: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-    </svg>
-  ),
-  Settings: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
-  ),
-  User: ({ className }) => (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-    </svg>
-  )
-};
+  /* ---------- Landing ---------- */
+  #landing-nav{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 6vw;background:rgba(18,21,28,0.92);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;font-family:var(--font-display);}
+  .logo .mark{width:22px;height:22px;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;}
+  .logo .mark span{flex:1;}
+  .logo .mark span:nth-child(1){background:var(--manufacturer);}
+  .logo .mark span:nth-child(2){background:var(--wholesaler);}
+  .logo .mark span:nth-child(3){background:var(--retailer);}
+  .logo .mark span:nth-child(4){background:var(--consumer);}
+  .nav-links{display:flex;gap:28px;align-items:center;color:var(--text-dim);font-size:15px;}
+  .nav-links a:hover{color:var(--text);}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 20px;border-radius:8px;border:1px solid transparent;
+    font-size:15px;font-weight:600;background:var(--accent);color:var(--accent-ink);
+  }
+  .btn:hover{filter:brightness(1.08);}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--text-dim);}
+  .btn-sm{padding:7px 14px;font-size:13px;border-radius:7px;}
 
-export default function StratumApp() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState('dashboard');
-  
-  const [tasks, setTasks] = useState([
-    { id: 1, title: 'Finalize presentation slides', status: 'in-progress', priority: 'High', date: 'Today' },
-    { id: 2, title: 'Review Q3 financial report', status: 'completed', priority: 'Medium', date: 'Yesterday' },
-    { id: 3, title: 'Update homepage copy', status: 'todo', priority: 'Low', date: 'Tomorrow' },
-    { id: 4, title: 'Weekly team sync', status: 'todo', priority: 'Medium', date: 'Today' },
-    { id: 5, title: 'Design system updates', status: 'in-progress', priority: 'High', date: 'Next Week' },
-  ]);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
+  .hero{
+    display:grid;grid-template-columns:1.1fr 1fr;gap:48px;
+    padding:80px 6vw 60px;align-items:center;max-width:1400px;margin:0 auto;
+  }
+  .hero h1{font-size:52px;line-height:1.05;}
+  .hero p.sub{color:var(--text-dim);font-size:18px;max-width:520px;margin-top:18px;}
+  .hero .ctas{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;}
+  .strata-graphic{position:relative;height:380px;border-radius:14px;overflow:hidden;border:1px solid var(--line);}
+  .strata-band{position:absolute;left:0;right:0;display:flex;align-items:center;padding:0 24px;font-weight:700;font-family:var(--font-display);color:#111;font-size:15px;}
+  .strata-band small{display:block;font-family:var(--font-body);font-weight:500;font-size:12.5px;opacity:.75;margin-top:2px;}
+  .band-1{top:0;height:26%;background:var(--manufacturer);color:#2A1300;transform:skewY(-2deg);transform-origin:left;}
+  .band-2{top:24%;height:26%;background:var(--wholesaler);color:#04241D;}
+  .band-3{top:49%;height:26%;background:var(--retailer);color:#241B00;transform:skewY(1deg);}
+  .band-4{top:74%;height:26%;background:var(--consumer);color:#0E0F2E;}
 
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(t => t.status === 'completed').length;
-  const inProgressTasks = tasks.filter(t => t.status === 'in-progress').length;
-  const todoTasks = tasks.filter(t => t.status === 'todo').length;
+  .role-strip{padding:10px 6vw 90px;max-width:1400px;margin:0 auto;}
+  .role-strip h2{font-size:28px;margin-bottom:8px;}
+  .role-strip>p{color:var(--text-dim);margin:0 0 34px;max-width:640px;}
+  .role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .role-card{background:var(--surface);padding:26px 22px;min-height:210px;display:flex;flex-direction:column;}
+  .role-chip{width:34px;height:6px;border-radius:3px;margin-bottom:16px;}
+  .role-card h3{font-size:18px;margin-bottom:10px;}
+  .role-card p{color:var(--text-dim);font-size:14px;flex:1;margin:0 0 16px;}
+  .role-card button{width:100%;}
 
-  const toggleTaskStatus = (id) => {
-    setTasks(tasks.map(task => {
-      if (task.id === id) {
-        const newStatus = task.status === 'completed' ? 'todo' : 'completed';
-        return { ...task, status: newStatus };
-      }
-      return task;
-    }));
-  };
+  .feature-section{padding:20px 6vw 100px;max-width:1400px;margin:0 auto;}
+  .feature-section h2{font-size:28px;margin-bottom:34px;}
+  .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .feature-card{border:1px solid var(--line);border-radius:12px;padding:22px;background:var(--surface);}
+  .feature-card h4{font-size:16px;margin-bottom:8px;}
+  .feature-card p{color:var(--text-dim);font-size:13.5px;margin:0;}
 
-  const changeTaskStatus = (id, newStatus) => {
-    setTasks(tasks.map(task => 
-      task.id === id ? { ...task, status: newStatus } : task
-    ));
-  };
+  footer.landing-footer{border-top:1px solid var(--line);padding:32px 6vw;color:var(--text-dim);font-size:13px;display:flex;justify-content:space-between;}
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
-  };
+  @media (max-width:880px){
+    .hero{grid-template-columns:1fr;padding-top:40px;}
+    .hero h1{font-size:38px;}
+    .role-grid{grid-template-columns:1fr 1fr;}
+    .feature-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+  }
 
-  const handleAddTask = (e) => {
-    e.preventDefault();
-    if (!newTaskTitle.trim()) return;
-    
-    const newTask = {
-      id: Date.now(),
-      title: newTaskTitle,
-      status: 'todo',
-      priority: 'Medium',
-      date: 'Just now'
-    };
-    
-    setTasks([newTask, ...tasks]);
-    setNewTaskTitle('');
-  };
+  /* ---------- App shell ---------- */
+  #app{display:none;height:100vh;}
+  #app.active{display:flex;}
+  .app-sidebar{
+    width:230px;flex-shrink:0;border-right:1px solid var(--line);
+    display:flex;flex-direction:column;padding:20px 14px;background:var(--surface);
+  }
+  .app-sidebar .logo{padding:6px 10px 22px;font-size:17px;}
+  .side-link{
+    display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:8px;
+    color:var(--text-dim);font-size:14.5px;font-weight:600;margin-bottom:2px;
+  }
+  .side-link .ic{width:18px;height:18px;flex-shrink:0;}
+  .side-link:hover{background:var(--surface-2);color:var(--text);}
+  .side-link.active{background:var(--surface-2);color:var(--text);box-shadow:inset 3px 0 0 var(--accent);}
+  .side-sep{height:1px;background:var(--line);margin:14px 4px;}
+  .side-role-badge{
+    margin:auto 4px 0;padding:12px;border-radius:10px;background:var(--surface-2);
+    border:1px solid var(--line);font-size:12.5px;
+  }
+  .side-role-badge .rname{font-weight:700;font-size:13.5px;margin-bottom:2px;}
+  .role-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+  .switch-role-btn{width:100%;margin-top:8px;}
 
-  const Sidebar = () => (
-    <>
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden transition-opacity"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-      
-      <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-center h-20 border-b border-slate-100 px-6">
-            <div className="flex items-center gap-3 w-full">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-indigo-200 shadow-lg">
-                <Icons.Layout className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-2xl font-bold text-slate-800 tracking-tight">Stratum</span>
-            </div>
-          </div>
-          
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <button 
-              onClick={() => { setCurrentPage('dashboard'); setSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
-                currentPage === 'dashboard' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              <Icons.Home className="w-5 h-5" />
-              Dashboard
-            </button>
-            <button 
-              onClick={() => { setCurrentPage('board'); setSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
-                currentPage === 'board' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              <Icons.Kanban className="w-5 h-5" />
-              Project Board
-            </button>
-            <button 
-              onClick={() => { setCurrentPage('settings'); setSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
-                currentPage === 'settings' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              <Icons.Settings className="w-5 h-5" />
-              Settings
-            </button>
-          </nav>
-          
-          <div className="p-4 border-t border-slate-100">
-            <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
-              <img 
-                src="https://placehold.co/100x100/4f46e5/ffffff?text=AM" 
-                alt="User Avatar" 
-                className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
-              />
-              <div className="flex flex-col text-left">
-                <span className="text-sm font-semibold text-slate-900">Alex Morgan</span>
-                <span className="text-xs text-slate-500">Workspace Admin</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </>
-  );
+  .app-main{flex:1;overflow-y:auto;position:relative;}
+  .topbar{
+    position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+    padding:14px 26px;border-bottom:1px solid var(--line);background:rgba(18,21,28,0.9);backdrop-filter:blur(6px);
+  }
+  .topbar h2{font-size:19px;}
+  .topbar .wallet{font-size:13px;color:var(--text-dim);background:var(--surface-2);padding:8px 12px;border-radius:8px;border:1px solid var(--line);}
+  .view{padding:26px;max-width:1000px;margin:0 auto;}
+  .view.wide{max-width:1200px;}
 
-  const Header = () => {
-    const pageTitles = {
-      'dashboard': 'Overview',
-      'board': 'Project Board',
-      'settings': 'Account Settings'
-    };
+  /* Feed / posts */
+  .post{border:1px solid var(--line);border-radius:12px;margin-bottom:20px;overflow:hidden;background:var(--surface);}
+  .post-head{display:flex;align-items:center;gap:10px;padding:14px 16px;}
+  .avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#111;}
+  .post-head .who{flex:1;}
+  .post-head .name{font-weight:700;font-size:14px;}
+  .post-head .meta{font-size:12px;color:var(--text-dim);}
+  .sponsored-tag{font-size:11px;color:var(--text-dim);border:1px solid var(--line);border-radius:5px;padding:2px 7px;}
+  .follow-btn{font-size:12.5px;padding:6px 12px;border-radius:7px;border:1px solid var(--accent);color:var(--accent);background:transparent;}
+  .follow-btn.following{border-color:var(--line);color:var(--text-dim);}
+  .video-box{
+    height:340px;position:relative;display:flex;align-items:center;justify-content:center;
+    color:rgba(255,255,255,.9);
+  }
+  .video-box .play{width:56px;height:56px;border-radius:50%;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;}
+  .video-box .play::after{content:'';border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:3px;}
+  .video-box .dur{position:absolute;bottom:10px;right:12px;font-size:11.5px;background:rgba(0,0,0,.5);padding:2px 7px;border-radius:5px;}
+  .post-caption{padding:12px 16px 4px;font-size:14px;}
+  .post-caption b{font-weight:700;}
+  .post-actions{display:flex;gap:6px;padding:8px 10px 14px;flex-wrap:wrap;}
+  .pa-btn{
+    display:flex;align-items:center;gap:6px;background:transparent;border:none;color:var(--text-dim);
+    font-size:13px;padding:8px 10px;border-radius:7px;
+  }
+  .pa-btn:hover{background:var(--surface-2);color:var(--text);}
+  .pa-btn.active{color:var(--accent);}
+  .pa-btn svg{width:17px;height:17px;}
+  .comments-box{border-top:1px solid var(--line);padding:12px 16px;}
+  .comment-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
+  .comment-row b{font-weight:700;}
+  .comment-input-row{display:flex;gap:8px;margin-top:8px;}
+  .comment-input-row input{
+    flex:1;background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+    border-radius:20px;padding:8px 14px;font-size:13px;
+  }
+  .comment-input-row button{background:var(--accent);color:var(--accent-ink);border:none;border-radius:16px;padding:8px 14px;font-size:12.5px;font-weight:600;}
 
-    return (
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-20">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setSidebarOpen(true)}
-              className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg lg:hidden"
-            >
-              <Icons.Menu className="w-6 h-6" />
-            </button>
-            <h1 className="text-2xl font-bold text-slate-900 hidden sm:block">{pageTitles[currentPage]}</h1>
-          </div>
-          
-          <div className="flex items-center gap-4 sm:gap-6">
-            <div className="hidden md:flex items-center relative">
-              <Icons.Search className="w-5 h-5 text-slate-400 absolute left-3" />
-              <input 
-                type="text" 
-                placeholder="Search Stratum..." 
-                className="pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all w-64"
-              />
-            </div>
-            <button className="p-2 text-slate-400 hover:text-indigo-600 transition-colors relative">
-              <Icons.Bell className="w-6 h-6" />
-              <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-          </div>
-        </div>
-      </header>
-    );
-  };
+  /* generic UI bits */
+  .card{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:18px;margin-bottom:16px;}
+  .row-between{display:flex;align-items:center;justify-content:space-between;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  label.field{display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px;font-weight:600;}
+  input,select,textarea{
+    width:100%;background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+    border-radius:8px;padding:10px 12px;font-size:14px;font-family:var(--font-body);
+  }
+  textarea{resize:vertical;}
+  .field-wrap{margin-bottom:14px;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);}
+  th{color:var(--text-dim);font-weight:600;font-size:12px;}
+  .pill{display:inline-block;font-size:11.5px;padding:3px 9px;border-radius:20px;font-weight:600;}
+  .pill.pending{background:#3a2f10;color:#e0b73f;}
+  .pill.fulfilled{background:#12332a;color:#59c9a9;}
+  .pill.active{background:#122e14;color:#5fd66f;}
+  .pill.paused{background:#332222;color:#e08a8a;}
+  .thumb{width:100%;aspect-ratio:4/3;border-radius:8px;margin-bottom:10px;}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--text-dim);}
+  .empty-state h3{color:var(--text);margin-bottom:8px;font-size:17px;}
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap;}
+  .tab-btn{padding:10px 4px;margin-right:16px;font-size:14px;font-weight:600;color:var(--text-dim);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;}
+  .tab-btn.active{color:var(--text);border-bottom-color:var(--accent);}
+  .status-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px;}
+  .status-bubble{flex-shrink:0;width:66px;text-align:center;font-size:11px;color:var(--text-dim);}
+  .status-bubble .ring{width:58px;height:58px;border-radius:50%;padding:2px;border:2px solid var(--accent);margin:0 auto 5px;display:flex;align-items:center;justify-content:center;}
+  .status-bubble .ring .avatar{width:100%;height:100%;}
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface-2);
+    border:1px solid var(--line);color:var(--text);padding:12px 20px;border-radius:10px;font-size:13.5px;
+    z-index:200;opacity:0;transition:opacity .25s ease, transform .25s ease;pointer-events:none;
+  }
+  .toast.show{opacity:1;}
+  .conv-list-item{display:flex;gap:10px;padding:12px;border-radius:8px;align-items:center;}
+  .conv-list-item:hover{background:var(--surface-2);cursor:pointer;}
+  .thread-msg{max-width:70%;padding:9px 13px;border-radius:12px;margin-bottom:8px;font-size:13.5px;}
+  .thread-msg.me{background:var(--accent);color:var(--accent-ink);margin-left:auto;}
+  .thread-msg.them{background:var(--surface-2);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;}
+  .modal-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto;}
 
-  const StatCard = ({ title, value, icon, colorClass, subtitle }) => (
-    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-slate-500">{title}</h3>
-        <div className={`p-2 rounded-lg ${colorClass}`}>
-          {icon}
-        </div>
-      </div>
-      <div className="flex items-baseline gap-2">
-        <span className="text-3xl font-bold text-slate-900">{value}</span>
-        {subtitle && <span className="text-sm font-medium text-slate-500">{subtitle}</span>}
+  @media (max-width:760px){
+    .app-sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;width:100%;height:64px;flex-direction:row;
+      border-right:none;border-top:1px solid var(--line);padding:8px 6px;z-index:60;align-items:center;overflow-x:auto;}
+    .app-sidebar .logo,.side-sep,.side-role-badge{display:none;}
+    .side-link{flex-direction:column;gap:3px;font-size:10px;padding:6px 10px;white-space:nowrap;}
+    .app-main{padding-bottom:70px;}
+    .view{padding:16px;}
+    .grid-2,.grid-3{grid-template-columns:1fr;}
+    .topbar{padding:12px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================= LANDING ============================= -->
+<div id="landing">
+  <nav id="landing-nav">
+    <div class="logo"><span class="mark"><span></span><span></span><span></span><span></span></span> Stratum</div>
+    <div class="nav-links">
+      <a href="#roles-anchor">For your business</a>
+      <a href="#features-anchor">Product</a>
+      <a href="#" id="nav-login">Open Stratum</a>
+    </div>
+    <button class="btn btn-sm" id="nav-get-started">Get started</button>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <h1>Kenya's trade, laid out in layers.</h1>
+      <p class="sub">Stratum connects manufacturers, wholesalers, retailers and everyday shoppers on one platform — bulk orders at agreed prices, a video feed to discover goods and services nationwide, and advertising that funds all of it.</p>
+      <div class="ctas">
+        <button class="btn" id="hero-get-started">Get started free</button>
+        <button class="btn btn-ghost" id="hero-see-demo">See how it works</button>
       </div>
     </div>
-  );
+    <div class="strata-graphic">
+      <div class="strata-band band-1">Manufacturer<small>Makes goods, sets wholesale price, runs ads</small></div>
+      <div class="strata-band band-2">Wholesaler<small>Buys in bulk, restocks retailers</small></div>
+      <div class="strata-band band-3">Retailer<small>Stocks shelves, sells to shoppers</small></div>
+      <div class="strata-band band-4">Consumer<small>Discovers and buys on the feed</small></div>
+    </div>
+  </section>
 
-  const DashboardView = () => (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <StatCard 
-          title="Total Tasks" 
-          value={totalTasks} 
-          icon={<Icons.Layout className="w-5 h-5" />}
-          colorClass="bg-blue-50 text-blue-600"
-        />
-        <StatCard 
-          title="To Do" 
-          value={todoTasks} 
-          icon={<Icons.CheckCircle className="w-5 h-5" />}
-          colorClass="bg-slate-50 text-slate-600"
-        />
-        <StatCard 
-          title="In Progress" 
-          value={inProgressTasks} 
-          icon={<Icons.Clock className="w-5 h-5" />}
-          colorClass="bg-amber-50 text-amber-600"
-        />
-        <StatCard 
-          title="Completed" 
-          value={completedTasks} 
-          subtitle={`/ ${totalTasks}`}
-          icon={<Icons.CheckCircle className="w-5 h-5" />}
-          colorClass="bg-emerald-50 text-emerald-600"
-        />
+  <section class="role-strip" id="roles-anchor">
+    <h2>One layer at a time</h2>
+    <p>Every account sits in one stratum of the trade chain, with tools built for what that layer actually does.</p>
+    <div class="role-grid">
+      <div class="role-card">
+        <div class="role-chip" style="background:var(--manufacturer)"></div>
+        <h3>Manufacturer</h3>
+        <p>List products, set wholesale pricing and minimum order quantities, message retailers and wholesalers directly, and run paid ad campaigns into the consumer feed.</p>
+        <button class="btn btn-ghost btn-sm enter-role" data-role="manufacturer">Enter as manufacturer</button>
       </div>
-
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100">
-          <h2 className="text-lg font-bold text-slate-900 mb-4">Quick Add Task</h2>
-          
-          <form onSubmit={handleAddTask} className="flex gap-3">
-            <div className="flex-1 relative">
-              <input 
-                type="text" 
-                value={newTaskTitle}
-                onChange={(e) => setNewTaskTitle(e.target.value)}
-                placeholder="What needs to be done?" 
-                className="w-full pl-4 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
-              />
-            </div>
-            <button 
-              type="submit"
-              disabled={!newTaskTitle.trim()}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors"
-            >
-              <Icons.Plus className="w-5 h-5" />
-              <span className="hidden sm:inline">Add</span>
-            </button>
-          </form>
-        </div>
-
-        <ul className="divide-y divide-slate-100">
-          {tasks.length === 0 ? (
-            <li className="p-8 text-center text-slate-500">
-              No tasks right now. Enjoy your day!
-            </li>
-          ) : (
-            tasks.slice(0, 5).map((task) => (
-              <li key={task.id} className="p-4 hover:bg-slate-50 transition-colors flex items-center justify-between group">
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <button 
-                    onClick={() => toggleTaskStatus(task.id)}
-                    className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                      task.status === 'completed' 
-                        ? 'bg-emerald-500 border-emerald-500' 
-                        : 'border-slate-300 hover:border-indigo-500'
-                    }`}
-                  >
-                    {task.status === 'completed' && <Icons.CheckCircle className="w-4 h-4 text-white" />}
-                  </button>
-                  
-                  <div className="flex flex-col min-w-0">
-                    <span className={`text-sm font-medium truncate ${
-                      task.status === 'completed' ? 'text-slate-400 line-through' : 'text-slate-900'
-                    }`}>
-                      {task.title}
-                    </span>
-                    <span className="text-xs text-slate-500 mt-0.5">{task.date} • {task.status.replace('-', ' ')}</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                    task.priority === 'High' ? 'bg-red-50 text-red-600' : 
-                    task.priority === 'Medium' ? 'bg-amber-50 text-amber-600' : 
-                    'bg-emerald-50 text-emerald-600'
-                  }`}>
-                    {task.priority}
-                  </span>
-                  <button 
-                    onClick={() => deleteTask(task.id)}
-                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <Icons.Trash className="w-4 h-4" />
-                  </button>
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
+      <div class="role-card">
+        <div class="role-chip" style="background:var(--wholesaler)"></div>
+        <h3>Wholesaler</h3>
+        <p>Buy directly from manufacturers at set bulk prices, hold stock, and resell to retailers across the country with your own markup.</p>
+        <button class="btn btn-ghost btn-sm enter-role" data-role="wholesaler">Enter as wholesaler</button>
+      </div>
+      <div class="role-card">
+        <div class="role-chip" style="background:var(--retailer)"></div>
+        <h3>Retailer</h3>
+        <p>Source stock from wholesalers or manufacturers, negotiate by message, and reach shoppers browsing the discovery feed.</p>
+        <button class="btn btn-ghost btn-sm enter-role" data-role="retailer">Enter as retailer</button>
+      </div>
+      <div class="role-card">
+        <div class="role-chip" style="background:var(--consumer)"></div>
+        <h3>Consumer</h3>
+        <p>Scroll a video feed of goods and services from all over Kenya. Like, comment, save, share, download and follow the sellers you trust.</p>
+        <button class="btn btn-ghost btn-sm enter-role" data-role="consumer">Enter as consumer</button>
       </div>
     </div>
-  );
+  </section>
 
-  const BoardColumn = ({ title, statusId, colorClass }) => {
-    const columnTasks = tasks.filter(t => t.status === statusId);
-    
-    return (
-      <div className="flex flex-col bg-slate-50/50 rounded-2xl border border-slate-200 p-4 min-h-[500px]">
-        <div className="flex items-center justify-between mb-4 px-2">
-          <h3 className="font-bold text-slate-800">{title}</h3>
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${colorClass}`}>
-            {columnTasks.length}
-          </span>
-        </div>
-        
-        <div className="space-y-3 flex-1 overflow-y-auto pr-1 pb-4">
-          {columnTasks.map(task => (
-            <div key={task.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
-              <div className="flex justify-between items-start mb-2">
-                <span className={`px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded ${
-                  task.priority === 'High' ? 'bg-red-50 text-red-600' : 
-                  task.priority === 'Medium' ? 'bg-amber-50 text-amber-600' : 
-                  'bg-emerald-50 text-emerald-600'
-                }`}>
-                  {task.priority}
-                </span>
-                <button onClick={() => deleteTask(task.id)} className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Icons.Trash className="w-4 h-4" />
-                </button>
-              </div>
-              <h4 className="text-sm font-medium text-slate-900 mb-3 leading-snug">{task.title}</h4>
-              
-              <div className="flex items-center justify-between pt-3 border-t border-slate-50 mt-auto">
-                <span className="text-xs font-medium text-slate-400 flex items-center gap-1">
-                  <Icons.Clock className="w-3.5 h-3.5" />
-                  {task.date}
-                </span>
-                
-                <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {statusId !== 'todo' && (
-                     <button 
-                       onClick={() => changeTaskStatus(task.id, statusId === 'completed' ? 'in-progress' : 'todo')}
-                       className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded font-medium transition-colors"
-                     >
-                       Prev
-                     </button>
-                  )}
-                  {statusId !== 'completed' && (
-                     <button 
-                       onClick={() => changeTaskStatus(task.id, statusId === 'todo' ? 'in-progress' : 'completed')}
-                       className="text-[11px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded font-medium transition-colors"
-                     >
-                       Next
-                     </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-          {columnTasks.length === 0 && (
-            <div className="border-2 border-dashed border-slate-200 rounded-xl h-24 flex items-center justify-center text-sla
+  <section class="feature-section" id="features-anchor">
+    <h2>Built into the platform</h2>
+    <div class="feature-grid">
+      <div class="feature-card"><h4>Video discovery feed</h4><p>A vertical feed where consumers find goods and services near them, with likes, comments, ratings, saves, downloads, shares and follows.</p></div>
+      <div class="feature-card"><h4>Manufacturer ↔ everyone, messaging</h4><p>Manufacturers message consumers, retailers and wholesalers directly from one inbox, without leaving Stratum.</p></div>
+      <div class="feature-card"><h4>Bulk ordering at set prices</h4><p>Wholesalers order straight from manufacturer catalogs. Manufacturers confirm and dispatch goods at the price they've set.</p></div>
+      <div class="feature-card"><h4>Paid advertising</h4><p>Manufacturers fund campaigns that place sponsored posts in the consumer feed — this is how Stratum makes money.</p></div>
+      <div class="feature-card"><h4>Personal &amp; business profiles</h4><p>Every account gets a profile with followers, following, bio and a status board for quick updates.</p></div>
+      <div class="feature-card"><h4>Nationwide discovery</h4><p>Browse goods and services by category and county, from Nairobi to Mombasa, Kisumu, Eldoret and beyond.</p></div>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <span>© 2026 Stratum, Kenya</span>
+    <span>A demo build — data is stored only in this browser.</span>
+  </footer>
+</div>
+
+<!-- ============================= APP SHELL ============================= -->
+<div id="app">
+  <aside class="app-sidebar">
+    <div class="logo"><span class="mark"><span></span><span></span><span></span><span></span></span> Stratum</div>
+    <a class="side-link" data-view="feed"><span class="ic">🏠</span> Feed</a>
+    <a class="side-link" data-view="discover"><span class="ic">🧭</span> Discover</a>
+    <a class="side-link" data-view="dashboard"><span class="ic">📦</span> <span id="dash-label">Dashboard</span></a>
+    <a class="side-link" data-view="messages"><span class="ic">💬</span> Messages</a>
+    <a class="side-link" data-view="saved"><span class="ic">🔖</span> Saved</a>
+    <a class="side-link" data-view="profile"><span class="ic">👤</span> Profile</a>
+    <div class="side-sep"></div>
+    <div class="side-role-badge">
+      <div class="rname"><span class="role-dot" id="badge-dot"></span><span id="badge-name"></span></div>
+      <div id="badge-role" style="color:var(--text-dim)"></div>
+      <button class="btn btn-ghost btn-sm switch-role-btn" id="switch-role-btn">Switch account</button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="topbar">
+      <h2 id="topbar-title">Feed</h2>
+      <div id="topbar-right"></div>
+    </div>
+    <div class="view wide" id="view-root"></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="modal-root"></div>
+
+<script>
+/* ======================================================================
+   STRATUM — single-file demo build
+   All data lives in localStorage under 'stratum_v1'. This is a working
+   front-end prototype: no server, but every interaction is functional
+   and persists across reloads in this browser.
+   ====================================================================== */
+
+const ROLE_
